@@ -45,7 +45,8 @@ grunt.initConfig({
           if (/^(.+)\.css$/.test(src)) {
 
             // CSS file from SCSS file is not needed.
-            if (grunt.file.exists(RegExp.$1 + '.scss')) { return false; }
+            if (grunt.file.exists(RegExp.$1 + '.scss'))
+              { return false; }
 
             // Give priority to souces directory.
             var filepath = src.replace(/^develop/, 'souces');
@@ -159,11 +160,14 @@ grunt.initConfig({
         handlerByTask: function(options) {
           // Restart httpd.
           var exec = require('child_process').exec;
-          exec('service node-httpd restart', function (error, stdout, stderr) {
-              console.log('stdout: ' + stdout);
-              console.log('stderr: ' + stderr);
-              if (error !== null) { console.log('exec error: ' + error); }
-          });
+          exec('service node-httpd restart',
+            function (error, stdout, stderr) {
+                console.log('stdout: ' + stdout);
+                console.log('stderr: ' + stderr);
+                if (error !== null)
+                  { console.log('exec error: ' + error); }
+            }
+          );
         }
       }
     }
@@ -267,9 +271,11 @@ grunt.initConfig({
       options: {
         handlerByFile: function(srcArray, dest, options) {
           if (!srcArray.length) {
-            return false;                                   // Exclude this.
+            // Exclude this.
+            return false;
           } else if (srcArray.length > 1) {
-            return path.dirname(dest) + '/thumbnails.html'; // Multiple photos in a page.
+            // Multiple photos in a page.
+            return path.dirname(dest) + '/thumbnails.html';
           }
         },
         filesArray: []
@@ -333,9 +339,11 @@ grunt.initConfig({
           },
           // End handler
           function(contentSrc, options) {
-            if (/<h2\b.*?>(.+?)<\/h2>/.test(contentSrc)) { // Content title
+            if (/<h2\b.*?>(.+?)<\/h2>/.test(contentSrc)) {
+              // Content title
               var pageTitle = RegExp.$1;
-              // Style menu item of current page. (a part of HTML inserted by 1st handler)
+              // Style menu item of current page.
+              // (a part of HTML inserted by 1st handler)
               return contentSrc.replace(
                 new RegExp('<li class="menu-item">(?=' + pageTitle + ')'),
                 '<li class="menu-item current">');
