@@ -134,10 +134,10 @@ If *JavaScript Function* is specified, following arguments are assigned, and ret
 handlerByTask(options)
 ```
 
-+ **`options` Type: Object**  
++ <strong>`options` Type: Object</strong>  
 Copy of `options` which is passed to `grunt.initConfig()`.
 
-+ **Return value**  
++ <strong>Return value</strong>  
 If the handler returns `false`, exit current task immediately, and the remaining handlers are not called.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.
 
@@ -183,17 +183,17 @@ If *JavaScript Function* is specified, following arguments are assigned, and ret
 handlerByFileSrc(src, dest, options)
 ```
 
-+ **`src` Type: String**  
++ <strong>`src` Type: String</strong>  
 The file path of a `src` file in specified `files` components. This was parsed by Grunt, therefore [Globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) (e.g. `foo/*.js`) which was specified to `src` became real path that was found (e.g. `foo/file-1.js`).  
 If `src` includes multiple files (e.g. array of files, or files `file-1.js` and `file-2.js` which was found via globbing pattern `*.js`), all handlers in `handlerByFileSrc` are called with an assigned first file in `src`, and these handlers are called with an assigned second file, and continue next. (see [Cycle of handlers](#cycle-handlers).) Note that this flow may be changed by handler. (see Return value below.)
 
-+ **`dest` Type: String**  
++ <strong>`dest` Type: String</strong>  
 The file path of a `dest` file in specified `files` components.
 
-+ **`options` Type: Object**  
++ <strong>`options` Type: Object</strong>  
 Copy of `options` which is passed to `grunt.initConfig()`.
 
-+ **Return value**  
++ <strong>Return value</strong>  
 If the handler returns `false`, remove current file path from `src`, and the remaining handlers in `handlerByFileSrc` are not called. This is like a `filter` (see [Custom Filter Function](http://gruntjs.com/configuring-tasks#custom-filter-function)). If other tasks will take these selected files (filtered files), an Array must be specified to `options.filesArray`. taskHelper adds `files` components to this array, and you let other task refer to this array.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.  
 If the handler returns String, the current `src` file path is replaced with this String. Note that other task may ignore the `src` file which doesn't exist.
@@ -244,17 +244,17 @@ If *JavaScript Function* is specified, following arguments are assigned, and ret
 handlerByFile(srcArray, dest, options)
 ```
 
-+ **`srcArray` Type: Array**  
++ <strong>`srcArray` Type: Array</strong>  
 The array which includes the file path of `src` files in specified `files` components. This was parsed by Grunt, therefore [Globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) (e.g. `foo/*.js`) which was specified to `src` became real path that was found (e.g. `foo/file-1.js`). And, these might have changed by handlers in `handlerByFileSrc`. (see above.)  
 If `src` is a file path (e.g. String `'foo/file.js'`), this array includes an element (e.g. Array `['foo/file.js']`). If `src` files were all not found, array is empty.
 
-+ **`dest` Type: String**  
++ <strong>`dest` Type: String</strong>  
 The file path of a `dest` file in specified `files` components.
 
-+ **`options` Type: Object**  
++ <strong>`options` Type: Object</strong>  
 Copy of `options` which is passed to `grunt.initConfig()`.
 
-+ **Return value**  
++ <strong>Return value</strong>  
 If the handler returns `false`, remove current element from `files` components, and the remaining handlers in `handlerByFile` are not called. If other tasks will take these selected files (filtered files), an Array must be specified to `options.filesArray`. taskHelper adds `files` components to this array, and you let other task refer to this array.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.  
 If the handler returns String, the current `dest` file path is replaced with this String.
@@ -309,14 +309,14 @@ If *JavaScript Function* is specified, following arguments are assigned, and ret
 handlerByContent(contentSrc, options)
 ```
 
-+ **`contentSrc` Type: String**  
++ <strong>`contentSrc` Type: String</strong>  
 The current `src` file's contents to first handler. To remaining handlers, the text which returned by previous handler.  
 All current `src` files (which were parsed by Grunt, and might have changed by `handlerByFileSrc`) are loaded, and these concatenated contents is passed to first handler. The text which was returned via the end handler is written to `dest` file.
 
-+ **`options` Type: Object**  
++ <strong>`options` Type: Object</strong>  
 Copy of `options` which is passed to `grunt.initConfig()`.
 
-+ **Return value**  
++ <strong>Return value</strong>  
 This value is passed to next handler. The end handler returns value to write to `dest` file.  
 If the handler returns `false`, the remaining handlers in `handlerByContent` are not called, and `dest` file is done nothing.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is content. i.e. if nothing was returned, empty text is written to `dest` file.
@@ -409,7 +409,7 @@ Now, taskHelper has following builtin handlers.
 This is a handler for `handlerByFile` to select files which are newer than `dest` from `src` (or newer than the time when this ran last time).
 
 + In the basic case, `srcArray` includes a file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.  
-i.e. **One src file : One dest file**
+**One src file : One dest file**
 
 Example: Minify only changed JS files.
 
@@ -444,7 +444,7 @@ grunt.initConfig({
 ```
 
 + When the `srcArray` includes multiple files path and a `dest` file path was specified, if there is any `src` file in which is newer than `dest` file, return true.  
-i.e. **Some src files : One dest file**
+**Some src files : One dest file**
 
 Example: Concatenate files if one or more source files were updated.
 
@@ -472,7 +472,7 @@ grunt.initConfig({
 
 + When the file to compare was not specified (e.g. `dest` was not specified, or `dest` is same file as `src`), if `src` file is newer than the time when this ran last time, return true.  
 taskHelper saves log file `.grunt/grunt-task-helper/fileUpdates.json` for compare.  
-i.e. **One or more src files : No dest file**
+**One or more src files : No dest file**
 
 Example: You don't need to keep PNG files that is source of minifying, because you have PSD files which is editable always and outputable to PNG.
 
