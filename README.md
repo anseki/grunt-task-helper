@@ -122,12 +122,12 @@ grunt.initConfig({
 
 ### <a name ="handlers">Handlers</a>
 taskHelper parses `files` components, and calls handlers at four timings. The flow may be changed by return value of handlers.  
-You can specify *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). If you want, you can specify multiple handlers into a one timing by specifying array of these.
+You can specify *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). If you want, you can specify multiple handlers into a timing by specifying array of these.
 
 Below are timings which call handlers, and how to specify each handlers.
 
 #### handlerByTask
-The handlers which were specified via `options.handlerByTask` are called per a task(target) before `files` components are parsed. This may be a one handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
+The handlers which were specified via `options.handlerByTask` are called per a task(target) before `files` components are parsed. This may be a handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
 If *JavaScript Function* is specified, following arguments are assigned, and return value is the following meaning.
 
 ```js
@@ -176,7 +176,7 @@ grunt.initConfig({
 ```
 
 #### handlerByFileSrc
-The handlers which were specified via `options.handlerByFileSrc` are called per a `src` file in specified `files` components (and parsed by Grunt). This may be a one handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
+The handlers which were specified via `options.handlerByFileSrc` are called per a `src` file in specified `files` components (and parsed by Grunt). This may be a handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
 If *JavaScript Function* is specified, following arguments are assigned, and return value is the following meaning.
 
 ```js
@@ -237,7 +237,7 @@ grunt.initConfig({
 ```
 
 #### handlerByFile
-The handlers which were specified via `options.handlerByFile` are called per a element in specified `files` components (and parsed by Grunt, and might have changed by `handlerByFileSrc`). This may be a one handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
+The handlers which were specified via `options.handlerByFile` are called per an element in specified `files` components (and parsed by Grunt, and might have changed by `handlerByFileSrc`). This may be a handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
 If *JavaScript Function* is specified, following arguments are assigned, and return value is the following meaning.
 
 ```js
@@ -245,8 +245,8 @@ handlerByFile(srcArray, dest, options)
 ```
 
 + **`srcArray` Type: Array**  
-The array which includes the file path of a `src` files in specified `files` components. This was parsed by Grunt, therefore [Globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) (e.g. `foo/*.js`) which was specified to `src` became real path that was found (e.g. `foo/file-1.js`). And, these might have changed by handlers in `handlerByFileSrc`. (see above.)  
-If `src` is a one file path (e.g. String `'foo/file.js'`), this array includes a one element (e.g. Array `['foo/file.js']`). If `src` files were all not found, array is empty.
+The array which includes the file path of `src` files in specified `files` components. This was parsed by Grunt, therefore [Globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) (e.g. `foo/*.js`) which was specified to `src` became real path that was found (e.g. `foo/file-1.js`). And, these might have changed by handlers in `handlerByFileSrc`. (see above.)  
+If `src` is a file path (e.g. String `'foo/file.js'`), this array includes an element (e.g. Array `['foo/file.js']`). If `src` files were all not found, array is empty.
 
 + **`dest` Type: String**  
 The file path of a `dest` file in specified `files` components.
@@ -301,7 +301,7 @@ grunt.initConfig({
 ```
 
 #### handlerByContent
-The handlers which were specified via `options.handlerByContent` are called per a `dest` file in specified `files` components (and parsed by Grunt, and might have changed by `handlerByFileSrc`). This may be a one handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
+The handlers which were specified via `options.handlerByContent` are called per a `dest` file in specified `files` components (and parsed by Grunt, and might have changed by `handlerByFileSrc`). This may be a handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
 These are handlers to edit (or check) the content that should be written to `dest` file.  
 If *JavaScript Function* is specified, following arguments are assigned, and return value is the following meaning.
 
@@ -408,7 +408,7 @@ Now, taskHelper has following builtin handlers.
 #### <a name ="builtin-handlers-newfile">newFile</a>
 This is a handler for `handlerByFile` to select files which are newer than `dest` from `src` (or newer than the time when this ran last time).
 
-+ In the basic case, `srcArray` includes a one file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.
++ In the basic case, `srcArray` includes a file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.
 
 Example: Minify only changed JS files.
 
