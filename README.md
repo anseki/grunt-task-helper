@@ -408,7 +408,8 @@ Now, taskHelper has following builtin handlers.
 #### <a name ="builtin-handlers-newfile">newFile</a>
 This is a handler for `handlerByFile` to select files which are newer than `dest` from `src` (or newer than the time when this ran last time).
 
-+ In the basic case, `srcArray` includes a file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.
++ In the basic case, `srcArray` includes a file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.  
+i.e. **One src file : One dest file**
 
 Example: Minify only changed JS files.
 
@@ -442,7 +443,8 @@ grunt.initConfig({
 });
 ```
 
-+ When the `srcArray` includes multiple files path and a `dest` file path was specified, if there is any `src` file in which is newer than `dest` file, return true.
++ When the `srcArray` includes multiple files path and a `dest` file path was specified, if there is any `src` file in which is newer than `dest` file, return true.  
+i.e. **Some src files : One dest file**
 
 Example: Concatenate files if one or more source files were updated.
 
@@ -469,7 +471,8 @@ grunt.initConfig({
 ```
 
 + When the file to compare was not specified (e.g. `dest` was not specified, or `dest` is same file as `src`), if `src` file is newer than the time when this ran last time, return true.  
-taskHelper saves log file `.grunt/grunt-task-helper/fileUpdates.json` for compare.
+taskHelper saves log file `.grunt/grunt-task-helper/fileUpdates.json` for compare.  
+i.e. **One or more src files : No dest file**
 
 Example: You don't need to keep PNG files that is source of minifying, because you have PSD files which is editable always and outputable to PNG.
 
@@ -499,7 +502,7 @@ grunt.initConfig({
 
 #### <a name ="builtin-handlers-size">size</a>
 This is a handler for `handlerByFileSrc` to select files which match specified size.  
-You can specify minimum file size to `options.minSize`, and maximum file size to `options.maxSize`. One or more of these must be specified.
+You can specify minimum file size to `options.minSize`, and maximum file size to `options.maxSize`. One or both of these must be specified.
 
 Example: Compress only big files.
 
