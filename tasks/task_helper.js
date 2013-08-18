@@ -155,6 +155,8 @@ module.exports = function(grunt) {
       handlersByFileSrc = initHandlers(options, 'handlerByFileSrc'),
       handlersByFile    = initHandlers(options, 'handlerByFile'),
       handlersByContent = initHandlers(options, 'handlerByContent'),
+      // Find out NL.
+      reNl = /(\r\n?|\n\r?)/, // I never use LFCR (\n\r).
       // options() retrieves copied values.
       filesArray = grunt.config.getRaw([this.name, this.target, 'options', 'filesArray']);
     if (!Array.isArray(filesArray)) { filesArray = false; }
@@ -171,7 +173,7 @@ module.exports = function(grunt) {
       { return; } // No file access.
 
     this.files.forEach(function(f) {
-      var dest = f.dest, srcArray = [], content;
+      var dest = f.dest, srcArray = [], contentArray, content;
       if (f.src && Array.isArray(f.src)) { // Valid src is always array.
         // Change & filter
         srcArray = f.src.map(function(src) {
@@ -203,8 +205,20 @@ module.exports = function(grunt) {
             // dest is writable. (This check is incomplete.)
             (!grunt.file.exists(dest) || grunt.file.isFile(dest))) {
 
-          content = srcArray.map(function(src) { return grunt.file.read(src); })
-            .join(grunt.util.linefeed);
+          contentArray = srcArray.map(function(src) { return grunt.file.read(src); });
+          if (typeof options.separator !== 'string') {
+            // Find out 1st NL.
+            if (!contentArray.some(function(content) {
+                  if (reNl.test(content)) {
+                    options.separator = RegExp.$1;
+                    return true;
+                  }
+                })) {
+              // Not found NL.
+              options.separator = grunt.util.linefeed;
+            }
+          }
+          content = contentArray.join(options.separator);
 
           // HANDLER: contentDest = handlerByContent(contentSrc, options)
           if (handlersByContent.every(function(handler) {

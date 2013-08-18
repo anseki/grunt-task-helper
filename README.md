@@ -321,6 +321,18 @@ This value is passed to next handler. The end handler returns value to write to 
 If the handler returns `false`, the remaining handlers in `handlerByContent` are not called, and `dest` file is done nothing.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is content. i.e. if nothing was returned, empty text is written to `dest` file.
 
+##### `options.separator`
+All contents of current `src` files are concatenated with `options.separator`. For example, *line-break-character* `\n` can be specified.  
+If this option was not specified, taskHelper uses *line-break-character* which was found first in current `src` file's contents. If that was not found, `grunt.util.linefeed` is used.
+
+Priority Order:
+
+1. `options.separator`
+2. line-break-character in `src` file's contents (found first)
+3. `grunt.util.linefeed`
+
+*NOTE:* `grunt.util.linefeed` is chosen via operating system which executes this task. Not operating system which uses the generated files. If this task is executed on Windows, `\n` for others will be specified to `options.separator` or `src` files may include this.
+
 Example:
 
 `Gruntfile.js`
@@ -533,4 +545,5 @@ grunt.initConfig({
 ```
 
 ## Release History
+ * 2013-08-18			v0.2.0			Added: `options.separator`
  * 2013-08-02			v0.1.0			Initial release.
