@@ -169,7 +169,8 @@ module.exports = function(grunt) {
       return;
     }
 
-    if (!handlersByFileSrc.length && !handlersByFile.length && !handlersByContent.length)
+    if (!handlersByFileSrc.length && !handlersByFile.length &&
+        !handlersByContent.length && !filesArray)
       { return; } // No file access.
 
     this.files.forEach(function(f) {

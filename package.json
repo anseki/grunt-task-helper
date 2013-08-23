@@ -1,7 +1,7 @@
 {
   "name": "grunt-task-helper",
   "description": "Help with handling the files (e.g. check changed files) before other tasks, or adding something (e.g. replace text).",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/anseki/grunt-task-helper",
   "author": {
     "name": "anseki"

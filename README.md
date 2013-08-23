@@ -120,6 +120,55 @@ grunt.initConfig({
 });
 ```
 
++ Edit HTML files to refer to minified JS files (e.g. `file.js` to `file.min.js`).
+
+`Gruntfile.js`
+
+```js
+var jsFiles = [];
+grunt.initConfig({
+  taskHelper: {
+    // Get source JS files and minified JS files via globbing pattern.
+    getFiles: {
+      options: {
+        filesArray: jsFiles
+      },
+      expand: true,
+      cwd: 'develop/',
+      src: '**/*.js',
+      dest: 'public_html/',
+      ext: '.min.js'
+    },
+    // Edit HTML files. <script src="file.js"> to <script src="file.min.js">
+    editHtml: {
+      options: {
+        handlerByContent: function(contentSrc, options) {
+          jsFiles.forEach(function(f) {
+            // Ignore file path, but not doing it is better.
+            var src = f.src[0].replace(/^.*\//, ''),
+              dest = f.dest.replace(/^.*\//, ''),
+              reSrc = new RegExp('(<script\\b[^>]+\\bsrc="[^"]*)' +
+                src.replace(/(\W)/g, '\\$1') + '(")', 'ig');
+            contentSrc = contentSrc.replace(reSrc, '$1' + dest + '$2');
+          });
+          return contentSrc;
+        }
+      },
+      expand: true,
+      cwd: 'develop/',
+      src: '**/*.html',
+      dest: 'public_html/'
+    }
+  },
+  uglify: {
+    deploy: {
+      // Minify files which are selected via taskHelper:getFiles.
+      files: jsFiles
+    }
+  }
+});
+```
+
 ### <a name ="handlers">Handlers</a>
 taskHelper parses `files` components, and calls handlers at four timings. The flow may be changed by return value of handlers.  
 You can specify *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). If you want, you can specify multiple handlers into a timing by specifying array of these.
@@ -545,5 +594,6 @@ grunt.initConfig({
 ```
 
 ## Release History
+ * 2013-08-24			v0.3.0			Allow the task which has no handlers.
  * 2013-08-18			v0.2.0			Added: `options.separator`
  * 2013-08-02			v0.1.0			Initial release.
