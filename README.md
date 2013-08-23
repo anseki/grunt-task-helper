@@ -23,12 +23,12 @@ grunt.loadNpmTasks('grunt-task-helper');
 ```
 
 ## taskHelper task
-taskHelper accepts standard Grunt `files` components (see [Files](http://gruntjs.com/configuring-tasks#files)) and one or more [*handlers*](#handlers).  
+taskHelper accepts standard Grunt `files` components (see [Files](http://gruntjs.com/configuring-tasks#files)) and [*handlers*](#handlers).  
 The handler is a *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). These handlers are called in some timings to select files or do something to files or file's contents. If you want, taskHelper creates standard Grunt `files` components which are new for other tasks.
 
 ### Overview
 In your project's Gruntfile, add a section named `taskHelper` to the data object passed into `grunt.initConfig()` (see [Configuring tasks](http://gruntjs.com/configuring-tasks)).  
-You specify the `files` and one or more [*handlers*](#handlers) (e.g. `options.handlerByFile`). taskHelper accepts these all files, and some files are selected or done something via handler, and only selected files (filtered files) are passed to other tasks via `options.filesArray`.
+You specify the `files` and some [*handlers*](#handlers) (e.g. `options.handlerByFile`). taskHelper accepts these all files, and some files are selected or done something via handler, and only selected files (filtered files) are passed to other tasks via `options.filesArray`.
 
 Examples:
 
