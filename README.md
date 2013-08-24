@@ -149,7 +149,8 @@ grunt.initConfig({
               dest = f.dest.replace(/^.*\//, ''),
               reSrc = new RegExp('(<script\\b[^>]+\\bsrc="[^"]*)' +
                 src.replace(/(\W)/g, '\\$1') + '(")', 'ig');
-              // Make these in every calling function, but keeping these is better.
+              // Make these in every calling this function,
+              // but keeping these is better.
             contentSrc = contentSrc.replace(reSrc, '$1' + dest + '$2');
           });
           return contentSrc;
@@ -170,7 +171,8 @@ grunt.initConfig({
 });
 
 // taskHelper:getJs must be first.
-grunt.registerTask('default', ['taskHelper:getJs', 'uglify:minifyJs', 'taskHelper:editHtml']);
+grunt.registerTask('default',
+  ['taskHelper:getJs', 'uglify:minifyJs', 'taskHelper:editHtml']);
 ```
 
 ### <a name ="handlers">Handlers</a>
