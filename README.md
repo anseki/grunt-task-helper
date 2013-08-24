@@ -129,7 +129,7 @@ var jsFiles = [];
 grunt.initConfig({
   taskHelper: {
     // Get source JS files and minified JS files via globbing pattern.
-    getFiles: {
+    getJs: {
       options: {
         filesArray: jsFiles
       },
@@ -144,11 +144,12 @@ grunt.initConfig({
       options: {
         handlerByContent: function(contentSrc, options) {
           jsFiles.forEach(function(f) {
-            // Ignore file path, but not doing it is better.
+            // Ignore directory path, but not doing it is better.
             var src = f.src[0].replace(/^.*\//, ''),
               dest = f.dest.replace(/^.*\//, ''),
               reSrc = new RegExp('(<script\\b[^>]+\\bsrc="[^"]*)' +
                 src.replace(/(\W)/g, '\\$1') + '(")', 'ig');
+              // Make these in every calling function, but keeping these is better.
             contentSrc = contentSrc.replace(reSrc, '$1' + dest + '$2');
           });
           return contentSrc;
@@ -161,12 +162,15 @@ grunt.initConfig({
     }
   },
   uglify: {
-    deploy: {
-      // Minify files which are selected via taskHelper:getFiles.
+    minifyJs: {
+      // Minify files which are selected via taskHelper:getJs.
       files: jsFiles
     }
   }
 });
+
+// taskHelper:getJs must be first.
+grunt.registerTask('default', ['taskHelper:getJs', 'uglify:minifyJs', 'taskHelper:editHtml']);
 ```
 
 ### <a name ="handlers">Handlers</a>
