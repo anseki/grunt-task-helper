@@ -5,11 +5,9 @@
   "latedef": true,
   "newcap": true,
   "noarg": true,
-  "sub": true,
   "undef": true,
   "trailing": true,
   "boss": true,
-  "eqnull": true,
   "smarttabs": true,
   "node": true,
   "es5": true
