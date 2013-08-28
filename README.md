@@ -1,7 +1,7 @@
 # grunt-task-helper
 
 taskHelper helps selecting files for other tasks.  
-For example, you want to minify only changed JS files. Then taskHelper selects files which are newer than `dest` from `src` (or newer than the time when this ran last time), and these files are passed to [Uglify](https://npmjs.org/package/grunt-contrib-uglify) task.
+For example, you want to minify only changed JS files. Then taskHelper selects files which are newer than `dest` from `src` (or newer than the time when this ran last time), and these files are passed to [grunt-contrib-uglify](https://github.com/gruntjs/grunt-contrib-uglify) task.
 
 And, taskHelper helps you do something small to files (or file's contents).  
 For example, rename file, replace text, etc...  
@@ -22,7 +22,7 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-task-helper');
 ```
 
-## taskHelper task
+## The "taskHelper" task
 taskHelper accepts standard Grunt `files` components (see [Files](http://gruntjs.com/configuring-tasks#files)) and [*handlers*](#handlers).  
 The handler is a *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). These handlers are called in some timings to select files or do something to files or file's contents. If you want, taskHelper creates standard Grunt `files` components which are new for other tasks.
 
@@ -513,7 +513,7 @@ grunt.initConfig({
 + When the `srcArray` includes multiple files path and a `dest` file path was specified, if there is any `src` file in which is newer than `dest` file, return true.  
 **Some src files : One dest file**
 
-Example: Concatenate files if one or more source files were updated.
+Example: Concatenate files if one or more source files were updated. (More better way in [Tips](#tips))
 
 `Gruntfile.js`
 
@@ -597,6 +597,116 @@ grunt.initConfig({
     }
   }
 });
+```
+
+## <a name ="tips">Tips</a>
+
+### Some tasks can be one task by handlerByContent
+Some grunt plugins are wrapper of something which provide a method. And the method accepts `src` file's contents and returns contents to write to `dest` file.  
+If you want to give selected files by taskHelper to the plugin, specifying the method into `handlerByContent` instead of the using the plugin is better. Because grunt parses `files` components in every tasks(targets). `handlerByContent` can be included to one task with other handlers.
+
++ Example: Minify CSS files if one or more source files were updated.  
+[clean-css](https://github.com/GoalSmashers/clean-css) is wrapped by [grunt-contrib-cssmin](https://github.com/gruntjs/grunt-contrib-cssmin) plugin.
+
+`Gruntfile.js`
+
+```js
+grunt.initConfig({
+  taskHelper: {
+    cssmin: {
+      options: {
+        handlerByFile: 'newFile',
+        handlerByContent: require('clean-css').process,
+        relativeTo: 'public_html/css' // for clean-css
+      },
+      src: 'develop/css/*.css',
+      dest: 'public_html/css/all.css'
+    }
+  }
+});
+```
+
++ Example: Minify only changed HTML files.  
+[htmlclean](https://github.com/anseki/htmlclean) is wrapped by [grunt-htmlclean](https://github.com/anseki/grunt-htmlclean) plugin.
+
+`Gruntfile.js`
+
+```js
+grunt.initConfig({
+  taskHelper: {
+    deploy: {
+      options: {
+        handlerByFile: 'newFile',
+        handlerByContent: require('htmlclean')
+      },
+      expand: true,
+      cwd: 'develop/',
+      src: '**/*.html',
+      dest: 'public_html/'
+    }
+  }
+});
+```
+
++ Example: Concatenate files if one or more source files were updated.  
+`handlerByContent` works like [grunt-contrib-concat](https://github.com/gruntjs/grunt-contrib-concat) plugin. (Another plugin or module is unneeded.)
+
+`Gruntfile.js`
+
+```js
+grunt.initConfig({
+  taskHelper: {
+    deploy: {
+      options: {
+        handlerByFile: 'newFile',
+        handlerByContent: function(content) { return content; }, // Do nothing.
+        separator: ';'
+      },
+      src: 'develop/js/*.js',
+      dest: 'public_html/js/all.js'
+    }
+  }
+});
+```
+
+### Messages added to output log
+Grunt outputs log to STDOUT. Handlers can output messages.  
+For example, when there are a lot of targets, handlers output messages outstanding more than message `Running "..." task` by Grunt.
+
+`Gruntfile.js`
+
+```js
+var head = '==================================== ';
+grunt.initConfig({
+  taskHelper: {
+    options: {
+      handlerByTask: function() { grunt.log.writeln(head + grunt.task.current.target); }
+    },
+    // Even if there is not work, a {} is necessary.
+    html: { /* Do something if needed */ },
+    css:  { /* Do something if needed */ },
+    js:   { /* Do something if needed */ },
+    img:  { /* Do something if needed */ }
+  },
+  fooTask: {
+    html: { /* Do something */ },
+    css:  { /* Do something */ },
+    js:   { /* Do something */ },
+    img:  { /* Do something */ }
+  },
+  barTask: {
+    html: { /* Do something */ },
+    css:  { /* Do something */ },
+    //js:   { /* Do something */ },
+    img:  { /* Do something */ }
+  }
+});
+grunt.registerTask('default', [
+  'taskHelper:html', 'fooTask:html', 'barTask:html',
+  'taskHelper:css', 'fooTask:css', 'barTask:css',
+  'taskHelper:js', 'fooTask:js',
+  'taskHelper:img', 'fooTask:img', 'barTask:img'
+]);
 ```
 
 ## Release History

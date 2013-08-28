@@ -36,6 +36,7 @@ module.exports = function(grunt) {
         }
       },
       handlerByFile: {
+        // 'new' is keyword of language.
         newFile: function(srcArray, dest, options) {
           var srcMtime, destMtime;
           if (!srcArray.length) {
