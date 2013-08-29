@@ -30,9 +30,7 @@ The handler is a *JavaScript Function* which you wrote, or a name of [builtin ha
 In your project's Gruntfile, add a section named `taskHelper` to the data object passed into `grunt.initConfig()` (see [Configuring tasks](http://gruntjs.com/configuring-tasks)).  
 You specify the `files` and some [*handlers*](#handlers) (e.g. `options.handlerByFile`). taskHelper accepts these all files, and some files are selected or done something via handler, and only selected files (filtered files) are passed to other tasks via `options.filesArray`.
 
-Examples:
-
-+ Copy only CSS files which are needed. This handler works like expanded [Custom Filter Function](http://gruntjs.com/configuring-tasks#custom-filter-function).
+**Example:** Copy only CSS files which are needed. This handler works like expanded [Custom Filter Function](http://gruntjs.com/configuring-tasks#custom-filter-function).
 
 `Gruntfile.js`
 
@@ -68,7 +66,7 @@ grunt.initConfig({
 });
 ```
 
-+ Minify only changed JS files. (see [Builtin handler "newFile"](#builtin-handlers-newfile).)
+**Example:** Minify only changed JS files. (see [Builtin handler "newFile"](#builtin-handlers-newfile).)
 
 `Gruntfile.js`
 
@@ -96,7 +94,7 @@ grunt.initConfig({
 });
 ```
 
-+ Insert menu navigation into HTML files.
+**Example:** Insert menu navigation into HTML files.
 
 `Gruntfile.js`
 
@@ -120,7 +118,7 @@ grunt.initConfig({
 });
 ```
 
-+ Edit HTML files to refer to minified JS files (e.g. `file.js` to `file.min.js`).
+**Example:** Edit HTML files to refer to minified JS files (e.g. `file.js` to `file.min.js`).
 
 `Gruntfile.js`
 
@@ -196,7 +194,7 @@ Copy of `options` which is passed to `grunt.initConfig()`.
 If the handler returns `false`, exit current task immediately, and the remaining handlers are not called.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.
 
-Example:
+**Example:**
 
 `Gruntfile.js`
 
@@ -253,7 +251,7 @@ If the handler returns `false`, remove current file path from `src`, and the rem
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.  
 If the handler returns String, the current `src` file path is replaced with this String. Note that other task may ignore the `src` file which doesn't exist.
 
-Example:
+**Example:**
 
 `Gruntfile.js`
 
@@ -314,7 +312,7 @@ If the handler returns `false`, remove current element from `files` components, 
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.  
 If the handler returns String, the current `dest` file path is replaced with this String.
 
-Example:
+**Example:**
 
 `Gruntfile.js`
 
@@ -388,7 +386,7 @@ Priority Order:
 
 *NOTE:* `grunt.util.linefeed` is chosen via operating system which executes this task. Not operating system which uses the generated files. If this task is executed on Windows, `\n` for others will be specified to `options.separator` or `src` files may include this.
 
-Example:
+**Example:**
 
 `Gruntfile.js`
 
@@ -478,7 +476,7 @@ This is a handler for `handlerByFile` to select files which are newer than `dest
 + In the basic case, `srcArray` includes a file path and a `dest` file path was specified. The modification times of both files are compared, and if `src` file is newer than `dest` file, return true.  
 **One src file : One dest file**
 
-Example: Minify only changed JS files.
+**Example:** Minify only changed JS files.
 
 `Gruntfile.js`
 
@@ -513,7 +511,7 @@ grunt.initConfig({
 + When the `srcArray` includes multiple files path and a `dest` file path was specified, if there is any `src` file in which is newer than `dest` file, return true.  
 **Some src files : One dest file**
 
-Example: Concatenate files if one or more source files were updated. (More better way in [Tips](#tips))
+**Example:** Concatenate files if one or more source files were updated. (More better way in [Tips](#tips))
 
 `Gruntfile.js`
 
@@ -541,7 +539,7 @@ grunt.initConfig({
 taskHelper saves log file `.grunt/grunt-task-helper/fileUpdates.json` for compare.  
 **One or more src files : No dest file**
 
-Example: You don't need to keep PNG files that is source of minifying, because you have PSD files which is editable always and outputable to PNG.
+**Example:** You don't need to keep PNG files that is source of minifying, because you have PSD files which is editable always and outputable to PNG.
 
 `Gruntfile.js`
 
@@ -571,7 +569,7 @@ grunt.initConfig({
 This is a handler for `handlerByFileSrc` to select files which match specified size.  
 You can specify minimum file size to `options.minSize`, and maximum file size to `options.maxSize`. One or both of these must be specified.
 
-Example: Compress only big files.
+**Example:** Compress only big files.
 
 `Gruntfile.js`
 
@@ -605,7 +603,7 @@ grunt.initConfig({
 Some grunt plugins are wrapper of something which provide a method. And the method accepts `src` file's contents and returns contents to write to `dest` file.  
 If you want to give selected files by taskHelper to the plugin, specifying the method into `handlerByContent` instead of the using the plugin is better. Because grunt parses `files` components in every tasks(targets). `handlerByContent` can be included to one task with other handlers.
 
-+ Example: Minify CSS files if one or more source files were updated.  
+**Example:** Minify CSS files if one or more source files were updated.  
 [clean-css](https://github.com/GoalSmashers/clean-css) is wrapped by [grunt-contrib-cssmin](https://github.com/gruntjs/grunt-contrib-cssmin) plugin.
 
 `Gruntfile.js`
@@ -626,7 +624,7 @@ grunt.initConfig({
 });
 ```
 
-+ Example: Minify only changed HTML files.  
+**Example:** Minify only changed HTML files.  
 [htmlclean](https://github.com/anseki/htmlclean) is wrapped by [grunt-htmlclean](https://github.com/anseki/grunt-htmlclean) plugin.
 
 `Gruntfile.js`
@@ -648,7 +646,7 @@ grunt.initConfig({
 });
 ```
 
-+ Example: Concatenate files if one or more source files were updated.  
+**Example:** Concatenate files if one or more source files were updated.  
 `handlerByContent` works like [grunt-contrib-concat](https://github.com/gruntjs/grunt-contrib-concat) plugin. (Another plugin or module is unneeded.)
 
 `Gruntfile.js`
@@ -671,7 +669,8 @@ grunt.initConfig({
 
 ### Log messages
 Grunt outputs log to STDOUT. Handlers can output messages.  
-For example, when there are a lot of targets, handlers output messages outstanding more than message `Running "..." task` by Grunt.
+
+**Example:** When there are a lot of targets, handlers output messages outstanding more than message `Running "..." task` by Grunt.
 
 `Gruntfile.js`
 
@@ -713,6 +712,13 @@ grunt.registerTask('default', [
 ### "Continue?", "Overwrite?" - Wizard style
 The handlers work via user's response for interactively running.
 
+**Example:**  Interactively running via [readlineSync](https://github.com/anseki/readline-sync).  
+Install readlineSync.
+
+```
+npm install -g readline-sync
+```
+
 `Gruntfile.js`
 
 ```js
@@ -723,14 +729,14 @@ grunt.initConfig({
       options: {
         handlerByTask: function() {
           // Abort the task if user don't want.
-          return readlineSync('The HTML files are copied. Continue? :')
+          return readlineSync.question('The HTML files are copied. Continue? :')
             .toLowerCase() === 'y';
           // Or process.exit()
         },
         handlerByFile: function(srcArray, dest) {
           if (grunt.file.exists(dest)) {
             // Exclude this file if user want to keep it.
-            return readlineSync('This file already exists.\n' + dest + '\n' +
+            return readlineSync.question('This file already exists.\n' + dest + '\n' +
               'Overwrite this file? :').toLowerCase() === 'y';
           }
         },
