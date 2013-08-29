@@ -601,7 +601,7 @@ grunt.initConfig({
 
 ## <a name ="tips">Tips</a>
 
-### Some tasks can be one task by handlerByContent
+### Task efficiency
 Some grunt plugins are wrapper of something which provide a method. And the method accepts `src` file's contents and returns contents to write to `dest` file.  
 If you want to give selected files by taskHelper to the plugin, specifying the method into `handlerByContent` instead of the using the plugin is better. Because grunt parses `files` components in every tasks(targets). `handlerByContent` can be included to one task with other handlers.
 
@@ -669,7 +669,7 @@ grunt.initConfig({
 });
 ```
 
-### Messages added to output log
+### Log messages
 Grunt outputs log to STDOUT. Handlers can output messages.  
 For example, when there are a lot of targets, handlers output messages outstanding more than message `Running "..." task` by Grunt.
 
@@ -680,7 +680,8 @@ var head = '==================================== ';
 grunt.initConfig({
   taskHelper: {
     options: {
-      handlerByTask: function() { grunt.log.writeln(head + grunt.task.current.target); }
+      handlerByTask: function()
+        { grunt.log.writeln((head + grunt.task.current.target.bold).cyan); }
     },
     // Even if there is not work, a {} is necessary.
     html: { /* Do something if needed */ },
@@ -707,6 +708,46 @@ grunt.registerTask('default', [
   'taskHelper:js', 'fooTask:js',
   'taskHelper:img', 'fooTask:img', 'barTask:img'
 ]);
+```
+
+### "Continue?", "Overwrite?" - Wizard style
+The handlers work via user's response for interactively running.
+
+`Gruntfile.js`
+
+```js
+var readlineSync = require('readline-sync');
+grunt.initConfig({
+  taskHelper: {
+    confirm: {
+      options: {
+        handlerByTask: function() {
+          // Abort the task if user don't want.
+          return readlineSync('The HTML files are copied. Continue? :')
+            .toLowerCase() === 'y';
+          // Or process.exit()
+        },
+        handlerByFile: function(srcArray, dest) {
+          if (grunt.file.exists(dest)) {
+            // Exclude this file if user want to keep it.
+            return readlineSync('This file already exists.\n' + dest + '\n' +
+              'Overwrite this file? :').toLowerCase() === 'y';
+          }
+        },
+        filesArray: []
+      },
+      expand: true,
+      cwd: 'develop/',
+      src: '**/*.html',
+      dest: 'public_html/'
+    }
+  },
+  copy: {
+    confirm: {
+      files: '<%= taskHelper.confirm.options.filesArray %>'
+    }
+  }
+});
 ```
 
 ## Release History
