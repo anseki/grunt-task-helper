@@ -40,14 +40,15 @@ grunt.initConfig({
     deploy: {
       options: {
         handlerByFileSrc: function(src, dest, options) {
-          if (/^(.+)\.css$/.test(src)) {
+          var pathElms = src.match(/^(.+)\.css$/), filepath;
+          if (pathElms) {
 
             // CSS file from SCSS file is not needed.
-            if (grunt.file.exists(RegExp.$1 + '.scss'))
+            if (grunt.file.exists(pathElms[1] + '.scss'))
               { return false; }
 
             // Give priority to souces directory.
-            var filepath = src.replace(/^develop/, 'souces');
+            filepath = src.replace(/^develop/, 'souces');
             if (grunt.file.exists(filepath)) { return filepath; }
           }
         },
@@ -174,7 +175,7 @@ grunt.registerTask('default',
 ```
 
 ### <a name ="handlers">Handlers</a>
-taskHelper parses `files` components, and calls handlers at four timings. The flow may be changed by return value of handlers.  
+taskHelper parses `files` components, and calls handlers at some timings. The flow may be changed by return value of handlers.  
 You can specify *JavaScript Function* which you wrote, or a name of [builtin handler](#builtin-handlers). If you want, you can specify multiple handlers into a timing by specifying array of these.
 
 Below are timings which call handlers, and how to specify each handlers.
@@ -215,10 +216,10 @@ grunt.initConfig({
           var exec = require('child_process').exec;
           exec('service node-httpd restart',
             function (error, stdout, stderr) {
-                console.log('stdout: ' + stdout);
-                console.log('stderr: ' + stderr);
-                if (error !== null)
-                  { console.log('exec error: ' + error); }
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              if (error !== null)
+                { console.log('exec error: ' + error); }
             }
           );
         }
@@ -266,8 +267,9 @@ grunt.initConfig({
     deploy: {
       options: {
         handlerByFileSrc: function(src, dest, options) {
-          if (/^(.+?)\.test(\.css)$/.test(path.basename(src))) {
-            var newSrc = 'theme-dark/css/' + RegExp.$1 + RegExp.$2;
+          var pathElms = path.basename(src).match(/^(.+?)\.test(\.css)$/), newSrc;
+          if (pathElms) {
+            newSrc = 'theme-dark/css/' + pathElms[1] + pathElms[2];
             return grunt.file.exists(newSrc) ?
               newSrc :  // Change theme to dark.
               false;    // Exclude this.
@@ -404,9 +406,10 @@ grunt.initConfig({
           },
           // End handler
           function(contentSrc, options) {
-            if (/<h2\b.*?>(.+?)<\/h2>/.test(contentSrc)) {
+            var pathElms = contentSrc.match(/<h2\b.*?>(.+?)<\/h2>/), pageTitle;
+            if (pathElms) {
               // Content title
-              var pageTitle = RegExp.$1;
+              pageTitle = pathElms[1];
               // Style menu item of current page.
               // (a part of HTML inserted by 1st handler)
               return contentSrc.replace(
@@ -425,8 +428,67 @@ grunt.initConfig({
 });
 ```
 
+#### handlerByAllFiles
+The handlers which were specified via `options.handlerByAllFiles` are called per a task(target) after `files` components are parsed (and might have changed by `handlerByFileSrc` and `handlerByFile`). This may be a handler, or an array which includes multiple handlers. (see [Cycle of handlers](#cycle-handlers).)  
+If *JavaScript Function* is specified, following arguments are assigned, and return value is the following meaning.
+
+```js
+handlerByAllFiles(files, options)
+```
+
++ <strong>`files` Type: Array</strong>  
+This is specified `files` components. This was parsed by Grunt, therefore [Globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) (e.g. `foo/*.js`) which was specified to `src` became real path that was found (e.g. `foo/file-1.js`). And, these might have changed by handlers in `handlerByFileSrc` and `handlerByFile`. (see above.)  
+If the files were all not found or these were all removed by `handlerByFileSrc` and `handlerByFile`, array is empty.  
+This array may be different from `options.filesArray`. This array includes only files which were selected in current task(target), but the `options.filesArray` may include files which were added by other tasks(targets) too.
+
++ <strong>`options` Type: Object</strong>  
+Copy of `options` which is passed to `grunt.initConfig()`.
+
++ <strong>Return value</strong>  
+If the handler returns `false`, exit current task immediately, and the remaining handlers are not called.  
+*NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is ignored. i.e. it means the same as `return true`.
+
+**Example:**
+
+`Gruntfile.js`
+
+```js
+var path = require('path');
+grunt.initConfig({
+  taskHelper: {
+    pack: {
+      options: {
+        // Concatenate all CSS into all.css, and all JS into all.js
+        handlerByContent: function(content) { return content; },
+        // Pack concatenated files into assets.zip
+        handlerByAllFiles: function(files, options){
+          var exec = require('child_process').exec;
+          exec('zip assets.zip ' +
+            files.map(function(f) { return f.dest; }).join(' '),
+            function (error) {
+              if (error !== null)
+                { console.log('exec error: ' + error); }
+            }
+          );
+        },
+      },
+      files: [
+        {
+          src: 'css/*.css',
+          dest: 'assets/all.css'
+        },
+        {
+          src: 'js/*.js',
+          dest: 'assets/all.js'
+        }
+      ]
+    }
+  }
+});
+```
+
 ### <a name ="cycle-handlers">Cycle of handlers</a>
-The handlers are called at four timings as follows unless it is aborted by returning false.
+The handlers are called at some timings as follows unless it is aborted by returning false.
 
 ```
 ---------------------------------- <Task 1>
@@ -435,11 +497,13 @@ The handlers are called at four timings as follows unless it is aborted by retur
 |    :
 |
 |  ------------------------------- <Element 1 of files>
+|  |
 |  |  ---------------------------- <src file 1>
 |  |  |  CALL handlerByFileSrc 1
 |  |  |  CALL handlerByFileSrc 2
 |  |  |    :
 |  |  ----------------------------
+|  |
 |  |  ---------------------------- <src file 2>
 |  |  |  CALL handlerByFileSrc 1
 |  |  |  CALL handlerByFileSrc 2
@@ -451,15 +515,21 @@ The handlers are called at four timings as follows unless it is aborted by retur
 |  |  CALL handlerByFile 2
 |  |    :
 |  |
-|  |  CALL handlersByContent 1
-|  |  CALL handlersByContent 2
+|  |  CALL handlerByContent 1
+|  |  CALL handlerByContent 2
 |  |    :
 |  -------------------------------
+|
 |  ------------------------------- <Element 2 of files>
 |  |  (Same as <Element 1 of files>)
 |  -------------------------------
 |    :
+|
+|  CALL handlerByAllFiles 1
+|  CALL handlerByAllFiles 2
+|    :
 ----------------------------------
+
 ---------------------------------- <Task 2>
 |  (Same as <Task 1>)
 ----------------------------------
@@ -614,8 +684,7 @@ grunt.initConfig({
     cssmin: {
       options: {
         handlerByFile: 'newFile',
-        handlerByContent: require('clean-css').process,
-        relativeTo: 'public_html/css' // for clean-css
+        handlerByContent: (new require('clean-css')({relativeTo: 'public_html/css'})).minify,
       },
       src: 'develop/css/*.css',
       dest: 'public_html/css/all.css'
@@ -757,6 +826,7 @@ grunt.initConfig({
 ```
 
 ## Release History
+ * 2013-12-30			v0.3.5			Added: `options.handlerByAllFiles`
  * 2013-08-24			v0.3.0			Allow the task which has no handlers.
  * 2013-08-18			v0.2.0			Added: `options.separator`
  * 2013-08-02			v0.1.0			Initial release.

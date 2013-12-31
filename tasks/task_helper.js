@@ -14,16 +14,6 @@ module.exports = function(grunt) {
     path = require('path'),
     fs = require('fs'),
 
-    // Wrap handler
-    callHandler = function(handler, argsArray, handlerClass) {
-      try {
-        return handler.apply(grunt.task.current, argsArray);
-      } catch (e) {
-        grunt.log.error(e);
-        grunt.fail.warn(handlerClass + ' failed.');
-      }
-    },
-
     builtinHandler = {
       handlerByTask: {},
       handlerByFileSrc: {
@@ -62,21 +52,8 @@ module.exports = function(grunt) {
           }
         }
       },
-      handlerByContent: {}
-    },
-    // filter() & set builtinHandler
-    initHandlers = function(options, handlerClass) {
-      var optHandlers = Array.isArray(options[handlerClass]) ?
-            options[handlerClass] : [options[handlerClass]],
-        handlers = [];
-      optHandlers.forEach(function(handler) {
-        if (typeof handler === 'function') {
-          handlers.push(handler);
-        } else if (typeof handler === 'string' && builtinHandler[handlerClass][handler]) {
-          handlers.push(builtinHandler[handlerClass][handler]);
-        }
-      });
-      return handlers;
+      handlerByContent: {},
+      handlerByAllFiles: {}
     },
 
     // Static object for mtime of files
@@ -143,6 +120,31 @@ module.exports = function(grunt) {
       }
     };
 
+  // Wrap handler
+  function callHandler(handler, argsArray, handlerClass) {
+    try {
+      return handler.apply(grunt.task.current, argsArray);
+    } catch (e) {
+      grunt.log.error(e);
+      grunt.fail.warn(handlerClass + ' failed.');
+    }
+  }
+
+  // filter() & set builtinHandler
+  function initHandlers(options, handlerClass) {
+    var optHandlers = Array.isArray(options[handlerClass]) ?
+          options[handlerClass] : [options[handlerClass]],
+      handlers = [];
+    optHandlers.forEach(function(handler) {
+      if (typeof handler === 'function') {
+        handlers.push(handler);
+      } else if (typeof handler === 'string' && builtinHandler[handlerClass][handler]) {
+        handlers.push(builtinHandler[handlerClass][handler]);
+      }
+    });
+    return handlers;
+  }
+
   grunt.registerMultiTask('taskHelper',
     'Help with handling the files (e.g. check changed files) before' +
       ' other tasks, or adding something (e.g. replace text).', function() {
@@ -150,17 +152,17 @@ module.exports = function(grunt) {
     var
       options = this.options({
         handlerByTask: [], handlerByFileSrc: [],
-        handlerByFile: [], handlerByContent: []
+        handlerByFile: [], handlerByContent: [], handlerByAllFiles: []
       }),
-      handlersByTask    = initHandlers(options, 'handlerByTask'),
-      handlersByFileSrc = initHandlers(options, 'handlerByFileSrc'),
-      handlersByFile    = initHandlers(options, 'handlerByFile'),
-      handlersByContent = initHandlers(options, 'handlerByContent'),
-      // Find out NL.
-      reNl = /(\r\n?|\n\r?)/, // I never use LFCR (\n\r).
+      handlersByTask      = initHandlers(options, 'handlerByTask'),
+      handlersByFileSrc   = initHandlers(options, 'handlerByFileSrc'),
+      handlersByFile      = initHandlers(options, 'handlerByFile'),
+      handlersByContent   = initHandlers(options, 'handlerByContent'),
+      handlersByAllFiles  = initHandlers(options, 'handlerByAllFiles'),
+      filesArray = [], // files of current.
       // options() retrieves copied values.
-      filesArray = grunt.config.getRaw([this.name, this.target, 'options', 'filesArray']);
-    if (!Array.isArray(filesArray)) { filesArray = false; }
+      optFilesArray = grunt.config.getRaw([this.name, this.target, 'options', 'filesArray']);
+    if (!Array.isArray(optFilesArray)) { optFilesArray = false; }
 
     // HANDLER: handlerByTask(options)
     if (!handlersByTask.every(function(handler) {
@@ -171,11 +173,11 @@ module.exports = function(grunt) {
     }
 
     if (!handlersByFileSrc.length && !handlersByFile.length &&
-        !handlersByContent.length && !filesArray)
+        !handlersByContent.length && !handlersByAllFiles.length && !optFilesArray)
       { return; } // No file access.
 
     this.files.forEach(function(f) {
-      var dest = f.dest, srcArray = [], contentArray, content;
+      var dest = f.dest, srcArray = [], content;
       if (f.src && Array.isArray(f.src)) { // Valid src is always array.
         // Change & filter
         srcArray = f.src.map(function(src) {
@@ -200,40 +202,57 @@ module.exports = function(grunt) {
           })) {
 
         // Grunt not supports empty src.
-        if (filesArray && srcArray.length)
-          { filesArray.push({ src: srcArray, dest: dest }); }
+        if (srcArray.length) {
+          filesArray.push({ src: srcArray, dest: dest });
 
-        if (srcArray.length && dest && handlersByContent.length &&
-            // dest is writable. (This check is incomplete.)
-            (!grunt.file.exists(dest) || grunt.file.isFile(dest))) {
+          if (dest && handlersByContent.length &&
+              // dest is writable. (This check is incomplete.)
+              (!grunt.file.exists(dest) || grunt.file.isFile(dest))) {
 
-          contentArray = srcArray.map(function(src) { return grunt.file.read(src); });
-          if (typeof options.separator !== 'string') {
-            // Find out 1st NL.
-            if (!contentArray.some(function(content) {
-                  if (reNl.test(content)) {
-                    options.separator = RegExp.$1;
-                    return true;
-                  }
+            content = (function() {
+              var contentArray = srcArray.map(function(src) { return grunt.file.read(src); });
+              if (typeof options.separator !== 'string') {
+                // Find out 1st NL.
+                if (!contentArray.some(function(content) {
+                      var nl = content.match(/(\r\n?|\n\r?)/); // never use LFCR (\n\r).
+                      if (nl) {
+                        options.separator = nl[1];
+                        return true;
+                      }
+                    })) {
+                  // Not found NL.
+                  options.separator = grunt.util.linefeed;
+                }
+              }
+              return contentArray.join(options.separator);
+            })();
+
+            // HANDLER: contentDest = handlerByContent(contentSrc, options)
+            if (handlersByContent.every(function(handler) {
+                  content = callHandler(handler, [content, options], 'handlerByContent');
+                  return content !== false;
                 })) {
-              // Not found NL.
-              options.separator = grunt.util.linefeed;
+              // Write the destination file.
+              grunt.file.write(dest, content);
+              grunt.log.writeln('File "' + dest + '" created.');
             }
-          }
-          content = contentArray.join(options.separator);
-
-          // HANDLER: contentDest = handlerByContent(contentSrc, options)
-          if (handlersByContent.every(function(handler) {
-                content = callHandler(handler, [content, options], 'handlerByContent');
-                return content !== false;
-              })) {
-            // Write the destination file.
-            grunt.file.write(dest, content);
-            grunt.log.writeln('File "' + dest + '" created.');
           }
         }
       }
     });
+
+    if (optFilesArray) {
+      filesArray.forEach(function(f) { optFilesArray.push(f); });
+    }
+
+    // HANDLER: handlerByAllFiles(files, options)
+    if (!handlersByAllFiles.every(function(handler) {
+          return callHandler(handler, [filesArray, options], 'handlerByAllFiles') !== false;
+        })) {
+      grunt.log.writeln('Task is aborted by handlerByAllFiles.');
+      return;
+    }
+
   });
 
   grunt.registerTask('taskHelperFin', 'Finalize data.', function() {
