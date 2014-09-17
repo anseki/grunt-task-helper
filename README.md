@@ -785,7 +785,7 @@ The handlers work via user's response for interactively running.
 Install readlineSync.
 
 ```
-npm install -g readline-sync
+npm install readline-sync
 ```
 
 `Gruntfile.js`
