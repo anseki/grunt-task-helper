@@ -1,30 +1,8 @@
 {
   "name": "grunt-task-helper",
+  "version": "0.3.6",
+  "title": "grunt-task-helper",
   "description": "Help with handling the files (e.g. check changed files) before other tasks, or adding something (e.g. replace text).",
-  "version": "0.3.5",
-  "homepage": "https://github.com/anseki/grunt-task-helper",
-  "author": {
-    "name": "anseki"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/anseki/grunt-task-helper.git"
-  },
-  "bugs": {
-    "url": "https://github.com/anseki/grunt-task-helper/issues"
-  },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/anseki/grunt-task-helper/blob/master/LICENSE-MIT"
-    }
-  ],
-  "engines": {
-    "node": ">= 0.8.0"
-  },
-  "peerDependencies": {
-    "grunt": "~0.4.1"
-  },
   "keywords": [
     "gruntplugin",
     "filter",
@@ -35,5 +13,22 @@
     "updated file",
     "file size",
     "replace text"
-  ]
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1"
+  },
+  "homepage": "https://github.com/anseki/grunt-task-helper",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anseki/grunt-task-helper.git"
+  },
+  "bugs": "https://github.com/anseki/grunt-task-helper/issues",
+  "licenses": "MIT",
+  "author": {
+    "name": "anseki",
+    "url": "https://github.com/anseki"
+  }
 }
