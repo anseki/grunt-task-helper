@@ -376,7 +376,7 @@ This value is passed to next handler. The end handler returns value to write to 
 If the handler returns `false`, the remaining handlers in `handlerByContent` are not called, and `dest` file is done nothing.  
 *NOTE:* Any value except `false` (e.g. `undefined` or returns with *no value*) is content. i.e. if nothing was returned, empty text is written to `dest` file.
 
-##### `options.separator`
+##### options.separator
 All contents of current `src` files are concatenated with `options.separator`. For example, *line-break-character* `\n` can be specified.  
 If this option was not specified, taskHelper uses *line-break-character* which was found first in current `src` file's contents. If that was not found, `grunt.util.linefeed` is used.
 
