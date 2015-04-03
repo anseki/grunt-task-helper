@@ -28,7 +28,6 @@ module.exports = function(grunt) {
       handlerByFile: {
         // 'new' is keyword of language.
         newFile: function(srcArray, dest, options) {
-          var srcMtime, destMtime;
           if (!srcArray.length) {
             // both no data, don't add to filesArray. (Don't return undefined.)
             return typeof dest === 'string' && fileUpdates.isNew(dest, options);
