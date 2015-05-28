@@ -784,7 +784,7 @@ The handlers work via user's response for interactively running.
 **Example:**  Interactively running via [readlineSync](https://github.com/anseki/readline-sync).  
 Install readlineSync.
 
-```
+```shell
 npm install readline-sync
 ```
 
@@ -824,9 +824,3 @@ grunt.initConfig({
   }
 });
 ```
-
-## Release History
- * 2013-12-30			v0.3.5			Added: `options.handlerByAllFiles`
- * 2013-08-24			v0.3.0			Allow the task which has no handlers.
- * 2013-08-18			v0.2.0			Added: `options.separator`
- * 2013-08-02			v0.1.0			Initial release.

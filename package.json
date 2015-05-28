@@ -1,6 +1,6 @@
 {
   "name": "grunt-task-helper",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "title": "grunt-task-helper",
   "description": "Help with handling the files (e.g. check changed files) before other tasks, or adding something (e.g. replace text).",
   "keywords": [
@@ -26,7 +26,7 @@
     "url": "git://github.com/anseki/grunt-task-helper.git"
   },
   "bugs": "https://github.com/anseki/grunt-task-helper/issues",
-  "licenses": "MIT",
+  "license": "MIT",
   "author": {
     "name": "anseki",
     "url": "https://github.com/anseki"
