@@ -1,6 +1,6 @@
 {
   "name": "grunt-task-helper",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "title": "grunt-task-helper",
   "description": "Help with handling the files (e.g. check changed files) before other tasks, or adding something (e.g. replace text).",
   "keywords": [
@@ -18,7 +18,7 @@
     "node": ">= 0.8.0"
   },
   "peerDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": ">=0.4.0"
   },
   "homepage": "https://github.com/anseki/grunt-task-helper",
   "repository": {
