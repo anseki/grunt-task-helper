@@ -1,6 +1,6 @@
 {
   "name": "grunt-task-helper",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "title": "grunt-task-helper",
   "description": "Help with handling the files (e.g. check changed files) before other tasks, or adding something (e.g. replace text).",
   "keywords": [

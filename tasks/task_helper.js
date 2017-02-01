@@ -2,7 +2,7 @@
  * grunt-task-helper
  * https://github.com/anseki/grunt-task-helper
  *
- * Copyright (c) 2013 anseki
+ * Copyright (c) 2017 anseki
  * Licensed under the MIT license.
  */
 
