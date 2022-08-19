@@ -1,6 +1,6 @@
 # grunt-task-helper
 
-[![npm](https://img.shields.io/npm/v/grunt-task-helper.svg)](https://www.npmjs.com/package/grunt-task-helper) [![GitHub issues](https://img.shields.io/github/issues/anseki/grunt-task-helper.svg)](https://github.com/anseki/grunt-task-helper/issues) [![dependencies](https://img.shields.io/badge/dependencies-No%20dependency-brightgreen.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
+[![npm](https://img.shields.io/npm/v/grunt-task-helper.svg)](https://www.npmjs.com/package/grunt-task-helper) [![GitHub issues](https://img.shields.io/github/issues/anseki/grunt-task-helper.svg)](https://github.com/anseki/grunt-task-helper/issues) [![dependencies](https://img.shields.io/badge/dependencies-No%20dependency-brightgreen.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 taskHelper helps selecting files for other tasks.  
 For example, you want to minify only changed JS files. Then taskHelper selects files which are newer than `dest` from `src` (or newer than the time when this ran last time), and these files are passed to [grunt-contrib-uglify](https://github.com/gruntjs/grunt-contrib-uglify) task.
